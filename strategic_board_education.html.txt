@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>戦略バランスボード - 教育・研修業界版 | DEARS CONSULTING</title>
+    <meta name="description" content="教育・研修業界の収益達成可能性を俯瞰視点で可視化する戦略思考支援ツール。オンライン化、個別最適化、リスキリング、生涯学習の6要素で戦略バランスを分析。">
+    <meta name="keywords" content="戦略バランスボード,教育業界,研修業界,エドテック,オンライン教育,DEARS CONSULTING">
+    <meta name="author" content="DEARS CONSULTING">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="戦略バランスボード - 教育・研修業界版">
+    <meta property="og:description" content="教育・研修業界の収益達成可能性を俯瞰視点で可視化する戦略思考支援ツール">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="DEARS CONSULTING">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="戦略バランスボード - 教育・研修業界版">
+    <meta name="twitter:description" content="教育・研修業界の収益達成可能性を俯瞰視点で可視化する戦略思考支援ツール">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .card-shadow {
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .slider-track {
+            background: linear-gradient(to right, #a8edea, #fed6e3, #ffecd2, #fcb69f);
+        }
+        .strategic-element {
+            transition: all 0.3s ease;
+        }
+        .strategic-element:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+        .success-indicator {
+            background: radial-gradient(circle, #20bf6b, #26d0ce);
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 20px 0;
+        }
+        .insight-box {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+            margin: 15px 0;
+        }
+        .strategic-score {
+            font-size: 2.5rem;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .element-icon {
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.25rem;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+        .score-display {
+            background: rgba(255,255,255,0.9);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-top: 16px;
+        }
+        .slider-container {
+            margin-bottom: 1rem;
+        }
+        .slider-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        .slider-range {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .slider-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        .slider-range::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        .slider-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+        .slider-value {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        @media (max-width: 768px) {
+            .strategic-score {
+                font-size: 2rem;
+            }
+            .element-icon {
+                width: 2.5rem;
+                height: 2.5rem;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="p-4">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="mb-4">
+                <h1 class="text-4xl md:text-5xl font-bold text-white mb-2">
+                    <i class="fas fa-graduation-cap mr-3"></i>戦略バランスボード
+                </h1>
+                <h2 class="text-xl md:text-2xl text-white opacity-90">教育・研修業界版</h2>
+            </div>
+            <p class="text-base md:text-lg text-white opacity-80 max-w-2xl mx-auto">
+                教育・研修業界の収益達成可能性を俯瞰視点で可視化する戦略思考支援ツール
+            </p>
+            <div class="mt-4 text-sm text-white opacity-60">
+                Powered by DEARS CONSULTING
+            </div>
+        </div>
+
+        <!-- Success Rate Display -->
+        <div class="bg-white rounded-3xl card-shadow p-6 md:p-8 mb-8">
+            <div class="text-center">
+                <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-4">収益達成可能性</h3>
+                <div class="chart-container">
+                    <canvas id="successChart"></canvas>
+                </div>
+                <div id="successRate" class="strategic-score text-green-600 mt-4">74%</div>
+                <p class="text-gray-600 text-sm md:text-base mt-2">現在の戦略バランスに基づく達成予測</p>
+            </div>
+        </div>
+
+        <!-- Strategic Elements Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+            
+            <!-- 1. トレンド適合性 -->
+            <div class="strategic-element bg-white rounded-3xl card-shadow p-6">
+                <div class="flex items-center mb-6">
+                    <div class="element-icon bg-gradient-to-r from-blue-500 to-cyan-500">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-bold text-gray-800">トレンド適合性</h3>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="slider-container">
+                        <label class="slider-label">オンライン化・デジタル教育</label>
+                        <input type="range" id="onlineEducation" min="0" max="100" value="80" 
+                               class="slider-range slider-track">
+                        <div class="slider-info">
+                            <span>対面のみ</span>
+                            <span id="onlineEducationValue" class="slider-value">80%</span>
+                            <span>完全デジタル</span>
+                        </div>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label class="slider-label">個別最適化・パーソナライズ</label>
+                        <input type="range" id="personalization" min="0" max="100" value="70" 
+                               class="slider-range slider-track">
+                        <div class="slider-info">
+                            <span>画一的</span>
+                            <span id="personalizationValue" class="slider-value">70%</span>
+                            <span>完全個別化</span>
+                        </div>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label class="slider-label">リスキリング・再教育</label>
+                        <input type="range" id="reskilling" min="0" max="100" value="75" 
+                               class="slider-range slider-track">
+                        <div class="slider-info">
+                            <span>基礎教育</span>
+                            <span id="reskillingValue" class="slider-value">75%</span>
+                            <span>先端スキル</span>
+                        </div>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label class="slider-label">生涯学習・継続教育</label>
+                        <input type="range" id="lifelongLearning" min="0" max="100" value="65" 
+                               class="slider-range slider-track">
+                        <div class="slider-info">
+                            <span>単発完結</span>
+                            <span id="lifelongLearningValue" class="slider-value">65%</span>
+                            <span>継続サポート</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="score-display">
+                    <div class="text-sm font-semibold text-blue-800">トレンド総合スコア</div>
+                    <div id="trendScore" class="text-2xl font-bold text-blue-600">72.5%</div>
+                </div>
+            </div>
+
+            <!-- 2. ブランド力 -->
+            <div class="strategic-element bg-white rounded-3xl card-shadow p-6">
+                <div class="flex items-center mb-6">
+                    <div class="element-icon bg-gradient-to-r from-purple-500 to-indigo-500">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-bold text-gray-800">ブランド力</h3>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="slider-container">
+                        <label class="slider-label">教育機関としての信頼度</label>
+                        <input type="range" id="institutionalTrust" min="0" max="100" value="80" 
+                               class="slider-range slider-track">
+                        <div class="slider-info">
+                            <span>無名</span>
+                            <span id="institutionalTrustValue" class="slider-value">80%</span>
+                            <span>絶対的信頼</span>
+                        </div>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label class="slider-label">専門性・指導力認知</label>
+                        <input type="range" id="teachingExpertise" min="0" max="100" value="85" 
+                               class="slider-range slider-track">
+                        <div class="slider-info">
+                            <span>一般的</span>
+                            <span id="teachingExpertiseValue" class="slider-value">85%</span>
+                            <span>業界最高</span>
+                        </div>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label class="slider-label">受講生・企業満足度</label>
+                        <input type="range" id="studentSatisfaction" min="0" max="100" value="75" 
+                               class="slider-range slider-track">
+                        <div class="slider-info">
+                            <span>不満多数</span>
+                            <span id="studentSatisfactionValue" class="slider-value">75%</span>
+                            <span>非常に高い</span>
+                        </div>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label class="slider-label">業界内評価・口コミ</label>
+                        <input type="range" id="industryReputation" min="0" max="100" value="70" 
+                               class="slider-range slider-track">
+                        <div class="slider-info">
+                            <span>無評価</span>
+                            <span id="industryReputationValue" class="slider-value">70%</span>
+                            <span>業界リーダー</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="score-display">
+                    <div class="text-sm font-semibold text-purple-800">ブランド総合スコア</div>
+                    <div id="brandScore" class="text-2xl font-bold text-purple-600">77.5%</div>
+                </div>
+            </div>
+
+            <!-- 3. 教育コンテンツ・サービス力 -->
+            <div class="strategic-element bg-white rounded-3xl card-shadow p-6">
+                <div class="flex items-center mb-6">
+                    <div class="element-icon bg-gradient-to-r from-green-500 to-emerald-500">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-bold text-gray-800">教育コンテンツ・サービス力</h3>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="slider-container">
+                        <label class="slider-label">カリキュラム・プログラム品質</label>
+                        <input type="range" id="curriculumQuality" min="0" max="100" value="85" 
+                               class="slider-range slider-track">
+                        <div class="slider-info">
+                            <span>基本的</span>
+                            <span id="curriculumQualityValue" class="slider-value">85%</span>
+                            <span>最高品質</span>
+                        </div>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label class="slider-label">講師・インストラクター力</label>
+                        <input type="range" id="instructorQuality" min="0" max="100" value="80" 
+                               class="slider-range slider-track">
+                        <div class="slider-info">
+                            <span>平均的</span>
+                            <span id="instructorQualityValue" class="slider-value">80%</span>
+                            <span>業界トップ</span>
+                        </div>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label class="slider-label">学習成果・効果創出</label>
+                        <input type="range" id="learningOutcomes" min="0" max="100" value="75" 
+                               class="slider-range slider-track">
+                        <div class="slider-info">
+                            <span>効果薄</span>
+                            <span id="learningOutcomesValue" class="slider-value">75%</span>
+                            <span>確実な成果</span>
+                        </div>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label class="slider-label">カスタマイズ・柔軟性</label>
+                        <input type="range" id="customization" min="0" max="100" value="70" 
+                               class="slider-range slider-track">
+                        <div class="slider-info">
+                            <span>画一的</span>
+                            <span id="customizationValue" class="slider-value">70%</span>
+                            <span>完全カスタム</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="score-display">
+                    <div class="text-sm font-semibold text-green-800">コンテンツ総合スコア</div>
+                    <div id="contentScore" class="text-2xl font-bold text-green-600">77.5%</div>
+                </div>
+            </div>
+
+            <!-- 4. 経営環境 -->
+            <div class="strategic-element bg-white rounded-3xl card-shadow p-6">
+                <div class="flex items-center mb-6">
+                    <div class="element-icon bg-gradient-to-r from-yellow-500 to-orange-500">
+                        <i class="fas fa-school"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-bold text-gray-800">経営環境</h3>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="slider-container">
+                        <label class="slider-label">教室・施設優位性</label>
+                        <input type="range" id="facilityAdvantage" min="0" max="100" value="70" 
+                               class="slider-range slider-track">
+                        <div class="slider-info">
+                            <span>不利</span>
+                            <span id="facilityAdvantageValue" class="slider-value">70%</span>
+                            <span>最高環境</span>
+                        </div>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label class="slider-label">オンライン・対面ハイブリッド</label>
+                        <input type="range" id="hybridDelivery" min="0" max="100" value="75" 
+                               class="slider-range slider-track">
+                        <div class="slider-info">
+                            <span>単一形式</span>
+                            <span id="hybridDeliveryValue" class="slider-value">75%</span>
+                            <span>完全融合</span>
+                        </div>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label class="slider-label">デジタルプラットフォーム</label>
+                        <input type="range" id="digitalPlatform" min="0" max="100" value="65" 
+                               class="slider-range slider-track">
+                        <div class="slider-info">
+                            <span>アナログ</span>
+                            <span id="digitalPlatformValue" class="slider-value">65%</span>
+                            <span>最先端</span>
+                        </div>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label class="slider-label">運営・管理効率</label>
+                        <input type="range" id="operationalEfficiency" min="0" max="100" value="72" 
+                               class="slider-range slider-track">
+                        <div class="slider-info">
+                            <span>非効率</span>
+                            <span id="operationalEfficiencyValue" class="slider-value">72%</span>
+                            <span>最適化</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="score-display">
+                    <div class="text-sm font-semibold text-yellow-800">経営環境総合スコア</div>
+                    <div id="environmentScore" class="text-2xl font-bold text-yellow-600">70.5%</div>
+                </div>
+            </div>
+
+            <!-- 5. 価格戦略 -->
+            <div class="strategic-element bg-white rounded-3xl card-shadow p-6">
+                <div class="flex items-center mb-6">
+                    <div class="element-icon bg-gradient-to-r from-red-500 to-pink-500">
+                        <i class="fas fa-yen-sign"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-bold text-gray-800">価格戦略</h3>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="slider-container">
+                        <label class="slider-label">価格競争力</label>
+                        <input type="range" id="priceCompetitiveness" min="0" max="100" value="75" 
+                               class="slider-range slider-track">
+                        <div class="slider-info">
+                            <span>高すぎる</span>
+                            <span id="priceCompetitivenessValue" class="slider-value">75%</span>
+                            <span>最適価格</span>
+                        </div>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label class="slider-label">教育価値・ROI</label>
+                        <input type="range" id="educationalROI" min="0" max="100" value="80" 
+                               class="slider-range slider-track">
+                        <div class="slider-info">
+                            <span>投資効果薄</span>
+                            <span id="educationalROIValue" class="slider-value">80%</span>
+                            <span>高いROI</span>
+                        </div>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label class="slider-label">料金体系の柔軟性</label>
+                        <input type="range" id="pricingFlexibility" min="0" max="100" value="70" 
+                               class="slider-range slider-track">
+                        <div class="slider-info">
+                            <span>固定</span>
+                            <span id="pricingFlexibilityValue" class="slider-value">70%</span>
+                            <span>柔軟対応</span>
+                        </div>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label class="slider-label">支払い・資金調達支援</label>
+                        <input type="range" id="paymentSupport" min="0" max="100" value="65" 
+                               class="slider-range slider-track">
+                        <div class="slider-info">
+                            <span>一括払いのみ</span>
+                            <span id="paymentSupportValue" class="slider-value">65%</span>
+                            <span>多様な支援</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="score-display">
+                    <div class="text-sm font-semibold text-red-800">価格戦略総合スコア</div>
+                    <div id="pricingScore" class="text-2xl font-bold text-red-600">72.5%</div>
+                </div>
+            </div>
+
+            <!-- 6. コスト効率 -->
+            <div class="strategic-element bg-white rounded-3xl card-shadow p-6">
+                <div class="flex items-center mb-6">
+                    <div class="element-icon bg-gradient-to-r from-indigo-500 to-purple-500">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-bold text-gray-800">コスト効率</h3>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="slider-container">
+                        <label class="slider-label">講師・人件費効率</label>
+                        <input type="range" id="instructorCostEfficiency" min="0" max="100" value="70" 
+                               class="slider-range slider-track">
+                        <div class="slider-info">
+                            <span>非効率</span>
+                            <span id="instructorCostEfficiencyValue" class="slider-value">70%</span>
+                            <span>最適配置</span>
+                        </div>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label class="slider-label">教材・コンテンツ制作効率</label>
+                        <input type="range" id="contentProductionEfficiency" min="0" max="100" value="75" 
+                               class="slider-range slider-track">
+                        <div class="slider-info">
+                            <span>高コスト</span>
+                            <span id="contentProductionEfficiencyValue" class="slider-value">75%</span>
+                            <span>効率的制作</span>
+                        </div>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label class="slider-label">施設・設備コスト管理</label>
+                        <input type="range" id="facilityCostControl" min="0" max="100" value="68" 
+                               class="slider-range slider-track">
+                        <div class="slider-info">
+                            <span>高負担</span>
+                            <span id="facilityCostControlValue" class="slider-value">68%</span>
+                            <span>徹底管理</span>
+                        </div>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label class="slider-label">マーケティング・集客効率</label>
+                        <input type="range" id="marketingEfficiency" min="0" max="100" value="72" 
+                               class="slider-range slider-track">
+                        <div class="slider-info">
+                            <span>低効率</span>
+                            <span id="marketingEfficiencyValue" class="slider-value">72%</span>
+                            <span>高効率</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="score-display">
+                    <div class="text-sm font-semibold text-indigo-800">コスト効率総合スコア</div>
+                    <div id="costScore" class="text-2xl font-bold text-indigo-600">71.3%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Strategic Insights -->
+        <div class="bg-white rounded-3xl card-shadow p-6 md:p-8 mb-8">
+            <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-6">戦略的インサイト</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="insight-box">
+                    <h4 class="text-lg font-semibold mb-3">
+                        <i class="fas fa-lightbulb mr-2"></i>強み分析
+                    </h4>
+                    <div id="strengthAnalysis">
+                        <p>ブランド力（77.5%）が最大の強み。教育機関としての信頼度と専門性で差別化を実現。</p>
+                    </div>
+                </div>
+                <div class="insight-box">
+                    <h4 class="text-lg font-semibold mb-3">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>改善機会
+                    </h4>
+                    <div id="improvementAnalysis">
+                        <p>経営環境（70.5%）の向上が必要。デジタルプラットフォームとハイブリッド体制の強化が課題。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                <h4 class="text-lg font-semibold text-gray-800 mb-3">戦略的推奨アクション</h4>
+                <div id="recommendedActions" class="space-y-2 text-gray-700 text-sm md:text-base">
+                    <div>• オンライン学習プラットフォームの構築・強化</div>
+                    <div>• AI・データ分析による個別最適化カリキュラムの開発</div>
+                    <div>• 企業向けリスキリング・研修プログラムの拡充</div>
+                    <div>• ハイブリッド教育体制によるアクセシビリティ向上</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center text-white opacity-75 mt-8 pb-4">
+            <p class="text-lg font-semibold">© 2025 DEARS CONSULTING</p>
+            <p class="text-sm mt-2">戦略バランスボード - 教育・研修業界の戦略可視化と収益達成可能性の最大化をサポート</p>
+            <div class="mt-3 text-xs opacity-60">
+                <a href="https://dearsconsulting.com" class="hover:opacity-80 transition-opacity">
+                    https://dearsconsulting.com
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Chart.js setup
+        let successChart;
+        
+        function initializeChart() {
+            const ctx = document.getElementById('successChart').getContext('2d');
+            successChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [74, 26],
+                        backgroundColor: [
+                            'rgba(34, 197, 94, 0.8)',
+                            'rgba(229, 231, 235, 0.8)'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateAllScores() {
+            // トレンド適合性
+            const onlineEducation = parseFloat(document.getElementById('onlineEducation').value);
+            const personalization = parseFloat(document.getElementById('personalization').value);
+            const reskilling = parseFloat(document.getElementById('reskilling').value);
+            const lifelongLearning = parseFloat(document.getElementById('lifelongLearning').value);
+            const trendScore = (onlineEducation + personalization + reskilling + lifelongLearning) / 4;
+
+            // ブランド力
+            const institutionalTrust = parseFloat(document.getElementById('institutionalTrust').value);
+            const teachingExpertise = parseFloat(document.getElementById('teachingExpertise').value);
+            const studentSatisfaction = parseFloat(document.getElementById('studentSatisfaction').value);
+            const industryReputation = parseFloat(document.getElementById('industryReputation').value);
+            const brandScore = (institutionalTrust + teachingExpertise + studentSatisfaction + industryReputation) / 4;
+
+            // 教育コンテンツ・サービス力
+            const curriculumQuality = parseFloat(document.getElementById('curriculumQuality').value);
+            const instructorQuality = parseFloat(document.getElementById('instructorQuality').value);
+            const learningOutcomes = parseFloat(document.getElementById('learningOutcomes').value);
+            const customization = parseFloat(document.getElementById('customization').value);
+            const contentScore = (curriculumQuality + instructorQuality + learningOutcomes + customization) / 4;
+
+            // 経営環境
+            const facilityAdvantage = parseFloat(document.getElementById('facilityAdvantage').value);
+            const hybridDelivery = parseFloat(document.getElementById('hybridDelivery').value);
+            const digitalPlatform = parseFloat(document.getElementById('digitalPlatform').value);
+            const operationalEfficiency = parseFloat(document.getElementById('operationalEfficiency').value);
+            const environmentScore = (facilityAdvantage + hybridDelivery + digitalPlatform + operationalEfficiency) / 4;
+
+            // 価格戦略
+            const priceCompetitiveness = parseFloat(document.getElementById('priceCompetitiveness').value);
+            const educationalROI = parseFloat(document.getElementById('educationalROI').value);
+            const pricingFlexibility = parseFloat(document.getElementById('pricingFlexibility').value);
+            const paymentSupport = parseFloat(document.getElementById('paymentSupport').value);
+            const pricingScore = (priceCompetitiveness + educationalROI + pricingFlexibility + paymentSupport) / 4;
+
+            // コスト効率
+            const instructorCostEfficiency = parseFloat(document.getElementById('instructorCostEfficiency').value);
+            const contentProductionEfficiency = parseFloat(document.getElementById('contentProductionEfficiency').value);
+            const facilityCostControl = parseFloat(document.getElementById('facilityCostControl').value);
+            const marketingEfficiency = parseFloat(document.getElementById('marketingEfficiency').value);
+            const costScore = (instructorCostEfficiency + contentProductionEfficiency + facilityCostControl + marketingEfficiency) / 4;
+
+            // 総合スコア計算（重み付け - 教育・研修業界特化）
+            const totalScore = (
+                trendScore * 0.25 +        // トレンド適合性: 25% (教育業界では重要)
+                brandScore * 0.20 +        // ブランド力: 20%
+                contentScore * 0.30 +      // 教育コンテンツ・サービス力: 30% (最重要)
+                environmentScore * 0.15 +  // 経営環境: 15%
+                pricingScore * 0.05 +      // 価格戦略: 5%
+                costScore * 0.05           // コスト効率: 5%
+            );
+
+            // 表示更新
+            document.getElementById('trendScore').textContent = trendScore.toFixed(1) + '%';
+            document.getElementById('brandScore').textContent = brandScore.toFixed(1) + '%';
+            document.getElementById('contentScore').textContent = contentScore.toFixed(1) + '%';
+            document.getElementById('environmentScore').textContent = environmentScore.toFixed(1) + '%';
+            document.getElementById('pricingScore').textContent = pricingScore.toFixed(1) + '%';
+            document.getElementById('costScore').textContent = costScore.toFixed(1) + '%';
+            document.getElementById('successRate').textContent = Math.round(totalScore) + '%';
+
+            // チャート更新
+            successChart.data.datasets[0].data = [totalScore, 100 - totalScore];
+            successChart.update();
+
+            // インサイト更新
+            updateInsights(trendScore, brandScore, contentScore, environmentScore, pricingScore, costScore, totalScore);
+        }
+
+        function updateInsights(trend, brand, content, environment, pricing, cost, total) {
+            const scores = [
+                {name: 'トレンド適合性', score: trend},
+                {name: 'ブランド力', score: brand},
+                {name: '教育コンテンツ・サービス力', score: content},
+                {name: '経営環境', score: environment},
+                {name: '価格戦略', score: pricing},
+                {name: 'コスト効率', score: cost}
+            ];
+
+            const strongest = scores.reduce((a, b) => a.score > b.score ? a : b);
+            const weakest = scores.reduce((a, b) => a.score < b.score ? a : b);
+
+            document.getElementById('strengthAnalysis').innerHTML = 
+                `<p>${strongest.name}（${strongest.score.toFixed(1)}%）が最大の強み。この優位性を活かした戦略展開が重要。</p>`;
+
+            document.getElementById('improvementAnalysis').innerHTML = 
+                `<p>${weakest.name}（${weakest.score.toFixed(1)}%）の改善が優先課題。収益達成可能性向上の鍵となる領域。</p>`;
+
+            // 推奨アクション更新
+            let actions = [];
+            if (trend < 75) actions.push('• オンライン教育プラットフォームと個別最適化システムの導入');
+            if (brand < 80) actions.push('• 専門性アピールと受講生満足度向上施策の強化');
+            if (content < 80) actions.push('• カリキュラム品質向上と学習成果の可視化');
+            if (environment < 70) actions.push('• ハイブリッド教育体制とデジタル基盤の整備');
+            if (pricing < 75) actions.push('• 料金体系の見直しと教育ROIの明確化');
+            if (cost < 75) actions.push('• 講師配置最適化とコンテンツ制作効率化');
+
+            if (actions.length === 0) {
+                actions.push('• 現在の教育品質維持と更なる専門領域への展開');
+                actions.push('• AI・VR等の新技術を活用した次世代教育サービスの開発');
+            }
+
+            document.getElementById('recommendedActions').innerHTML = 
+                actions.map(action => `<div>${action}</div>`).join('');
+        }
+
+        // イベントリスナー設定
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeChart();
+            
+            const sliders = document.querySelectorAll('input[type="range"]');
+            sliders.forEach(slider => {
+                // 初期値表示
+                const valueElement = document.getElementById(slider.id + 'Value');
+                if (valueElement) {
+                    valueElement.textContent = slider.value + '%';
+                }
+                
+                // スライダー変更時の処理
+                slider.addEventListener('input', function() {
+                    const valueElement = document.getElementById(this.id + 'Value');
+                    if (valueElement) {
+                        valueElement.textContent = this.value + '%';
+                    }
+                    updateAllScores();
+                });
+            });
+
+            // 初期計算
+            updateAllScores();
+        });
+    </script>
+</body>
+</html>
